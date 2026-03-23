@@ -111,7 +111,7 @@ export async function POST(request: Request) {
         return Response.json({ success: false, message: "Unsupported conversion selected." }, { status: 400 });
     }
 
-    return new Response(outputBuffer, {
+    return new Response(new Uint8Array(outputBuffer), {
       status: 200,
       headers: {
         "Content-Type": "application/octet-stream",
