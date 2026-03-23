@@ -42,6 +42,7 @@ type HistoryItem = {
   message: string;
   time: string;
   downloadUrl?: string;
+  downloadName?: string;
 };
 type RunResult = {
   id: string;
@@ -49,6 +50,7 @@ type RunResult = {
   status: "success" | "error";
   message: string;
   downloadUrl?: string;
+  downloadName?: string;
 };
 type AppSettings = {
   maxHistory: number;
@@ -77,6 +79,7 @@ export default function Home() {
   const [conversionType, setConversionType] = useState("");
   const [message, setMessage] = useState("");
   const [downloadUrl, setDownloadUrl] = useState<string>("");
+  const [downloadName, setDownloadName] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [processingText, setProcessingText] = useState("");
@@ -169,6 +172,7 @@ export default function Home() {
   const onConvert = async () => {
     setMessage("");
     setDownloadUrl("");
+    setDownloadName("");
     setProgress(0);
     setRunResults([]);
     setProcessingText("");
@@ -209,6 +213,7 @@ export default function Home() {
         } else {
           const blob = await response.blob();
           const fileUrl = URL.createObjectURL(blob);
+          const fileNameFromHeader = response.headers.get("X-Output-Filename") || `converted_${file.name}`;
           const entry = {
             id: byId(),
             file: file.name,
@@ -217,14 +222,23 @@ export default function Home() {
             message: "Conversion completed.",
             time: new Date().toISOString(),
             downloadUrl: fileUrl,
+            downloadName: fileNameFromHeader,
           };
           addHistory(entry);
           setRunResults((prev) => [
             ...prev,
-            { id: entry.id, file: file.name, status: "success", message: "Done", downloadUrl: fileUrl },
+            {
+              id: entry.id,
+              file: file.name,
+              status: "success",
+              message: "Done",
+              downloadUrl: fileUrl,
+              downloadName: fileNameFromHeader,
+            },
           ]);
           setMessage(`Conversion completed. (${file.name})`);
           setDownloadUrl(fileUrl);
+          setDownloadName(fileNameFromHeader);
 
           if (selectedConversion?.category === "image") {
             setAfterImageUrl(fileUrl);
@@ -474,7 +488,11 @@ export default function Home() {
               </motion.p>
             )}
           </AnimatePresence>
-          {downloadUrl && <a className="download" href={downloadUrl}>Download latest output</a>}
+          {downloadUrl && (
+            <a className="download" href={downloadUrl} download={downloadName || "converted-file"}>
+              Download latest output
+            </a>
+          )}
 
           {(previewImageUrl || afterImageUrl) && (
             <div className="before-after">
@@ -513,7 +531,7 @@ export default function Home() {
                 <div key={r.id} className={`batch-item ${r.status}`}>
                   <span>{r.file}</span>
                   <span>{r.status}</span>
-                  {r.downloadUrl ? <a href={r.downloadUrl}>Download</a> : <span>-</span>}
+                  {r.downloadUrl ? <a href={r.downloadUrl} download={r.downloadName || "converted-file"}>Download</a> : <span>-</span>}
                 </div>
               ))}
             </div>
@@ -527,7 +545,11 @@ export default function Home() {
                   <div><strong>{h.file}</strong> - {h.type}</div>
                   <small>{new Date(h.time).toLocaleString()}</small>
                   <div className={h.status === "success" ? "ok" : "err"}>{h.message}</div>
-                  {h.downloadUrl && <a href={h.downloadUrl} className="mini-download">Download</a>}
+                  {h.downloadUrl && (
+                    <a href={h.downloadUrl} className="mini-download" download={h.downloadName || "converted-file"}>
+                      Download
+                    </a>
+                  )}
                 </motion.li>
               ))}
             </ul>
