@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Converter Hub</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header class="site-header">
+        <div class="container header-content">
+            <h1>File Converter Hub</h1>
+            <button id="themeToggle" class="theme-toggle" type="button">Toggle Theme</button>
+        </div>
+        <p class="subtitle">Convert common files quickly in one clean workspace.</p>
+    </header>
+
+    <main class="container">
+        <section class="card">
+            <h2>Convert Your File</h2>
+
+            <label for="conversionType" class="label">Conversion Type</label>
+            <select id="conversionType" class="input">
+                <option value="">Select conversion</option>
+                <option value="jpg_to_png">JPG to PNG</option>
+                <option value="png_to_jpg">PNG to JPG</option>
+                <option value="webp_to_png">WEBP to PNG</option>
+                <option value="webp_to_jpg">WEBP to JPG</option>
+                <option value="txt_to_pdf">TXT to PDF</option>
+                <option value="csv_to_json">CSV to JSON</option>
+                <option value="json_to_csv">JSON to CSV</option>
+            </select>
+
+            <div id="dropZone" class="drop-zone">
+                <p class="drop-title">Drag and drop a file here</p>
+                <p class="drop-subtitle">or click to browse</p>
+                <input id="fileInput" type="file" hidden>
+            </div>
+
+            <div id="fileInfo" class="file-info hidden">
+                <span id="fileIcon" class="file-icon">📄</span>
+                <span id="fileName"></span>
+                <span id="fileSize"></span>
+            </div>
+
+            <button id="convertBtn" class="btn" type="button">Convert File</button>
+
+            <div id="result" class="result hidden" aria-live="polite"></div>
+        </section>
+
+        <section class="card history-card">
+            <h2>Recent Conversions</h2>
+            <ul id="historyList" class="history-list"></ul>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <p>Built for app-preneurship assignment demo.</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
